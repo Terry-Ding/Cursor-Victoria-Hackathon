@@ -87,14 +87,14 @@ class SnakeGame:
                     else:
                         self.paused = not self.paused
                 elif not self.game_over and not self.paused:
-                    # Direction controls
-                    if event.key == pygame.K_UP and self.direction != Direction.DOWN:
+                    # Direction controls (WASD)
+                    if (event.key == pygame.K_UP or event.key == pygame.K_w) and self.direction != Direction.DOWN:
                         self.next_direction = Direction.UP
-                    elif event.key == pygame.K_DOWN and self.direction != Direction.UP:
+                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and self.direction != Direction.UP:
                         self.next_direction = Direction.DOWN
-                    elif event.key == pygame.K_LEFT and self.direction != Direction.RIGHT:
+                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and self.direction != Direction.RIGHT:
                         self.next_direction = Direction.LEFT
-                    elif event.key == pygame.K_RIGHT and self.direction != Direction.LEFT:
+                    elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and self.direction != Direction.LEFT:
                         self.next_direction = Direction.RIGHT
         return True
     
@@ -223,7 +223,7 @@ class SnakeGame:
             self.screen.blit(resume_text, resume_rect)
         
         # Draw controls
-        controls_text = self.font.render("Use arrow keys to move, SPACE to pause/restart", True, GRAY)
+        controls_text = self.font.render("Use WASD or arrow keys to move, SPACE to pause/restart", True, GRAY)
         self.screen.blit(controls_text, (10, WINDOW_HEIGHT - 30))
         
         pygame.display.flip()

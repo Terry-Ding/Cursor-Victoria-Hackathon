@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quick launcher for the Snake Game
+Quick launcher for the Breakout Game
 """
 
 import sys
@@ -10,18 +10,18 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), 'games'))
 
 def main():
-    print("🐍 Starting Snake Game...")
+    print("🧱 Starting Breakout...")
     print("=" * 40)
     print("Controls:")
-    print("  WASD or Arrow Keys: Move the snake")
-    print("  Space: Pause/Resume or restart after game over")
+    print("  A/D or Left/Right: Move paddle")
+    print("  Space: Pause/Resume")
     print("  Escape: Quit the game")
     print("=" * 40)
     print()
     
     try:
-        from games.snake import SnakeGame
-        game = SnakeGame()
+        from games.breakout import BreakoutGame
+        game = BreakoutGame()
         game.run()
     except ImportError as e:
         print(f"❌ Error importing game: {e}")
