@@ -1,6 +1,6 @@
 # Travel Planner - Java Graph Algorithm 🗺️
 
-A Java-based travel route planner using graph algorithms and greedy optimization for the Victoria Hackathon!
+A Java-based travel route planner using **Dijkstra's Algorithm** for the Victoria Hackathon!
 
 ## Overview
 
