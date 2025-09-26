@@ -2,11 +2,12 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println("Usage: java Main <cities.csv> [--start CityName] [--end CityName] [--return]");
-            System.out.println("Example: java Main data/cities.csv --start Victoria --end Tofino");
-            System.out.println("Example: java Main data/cities.csv --start Nanaimo --end Campbell River --return");
+            System.out.println("Example: java -cp out Main data/cities.csv --start Victoria --end Tofino");
+            System.out.println(
+                    "Example: java -cp out Main data/cities.csv --start Nanaimo --end Campbell River --return");
             return;
         }
 
@@ -25,51 +26,84 @@ public class Main {
             }
         }
 
-        List<City> cities = loadCities(csvPath);
-        Graph graph = buildCompleteGraph(cities);
-        City start = startName != null ? findCity(cities, startName) : cities.get(0);
-        City end = endName != null ? findCity(cities, endName) : null;
-
-        GreedyTravelPlanner planner = new GreedyTravelPlanner();
-
-        if (end != null) {
-            // Use intelligent route planning for start-to-end route
-            GreedyTravelPlanner.Result result = planner.planIntelligentRoute(graph, start, end, cities);
-
-            System.out.println("=== DIJKSTRA TRAVEL PLANNER ===");
-            System.out.println(result.description);
-            System.out.println();
-            System.out.println("Recommended route:");
-            for (int i = 0; i < result.route.size(); i++) {
-                City c = result.route.get(i);
-                System.out.print(c.getName());
-                if (i < result.route.size() - 1)
-                    System.out.print(" -> ");
+        try {
+            List<City> cities = loadCities(csvPath);
+            if (cities.isEmpty()) {
+                System.out.println("No cities found in CSV: " + csvPath);
+                return;
             }
-            System.out.println();
-            System.out.printf("Direct distance: %.2f km\n", result.totalDistanceKm);
 
-            if (!result.suggestedCities.isEmpty()) {
-                System.out.println();
-                System.out.println("Cities you can visit along the way:");
-                for (City city : result.suggestedCities) {
-                    double detourCost = calculateDetourCost(start, end, city);
-                    System.out.printf("- %s (adds %.1f km to your journey)\n", city.getName(), detourCost);
+            Graph graph = buildCompleteGraph(cities);
+
+            City start = startName != null ? findCity(cities, startName) : cities.get(0);
+            if (start == null) {
+                System.out.println("City not found: " + startName);
+                return;
+            }
+
+            City end = endName != null ? findCity(cities, endName) : null;
+            if (endName != null && end == null) {
+                System.out.println("City not found: " + endName);
+                return;
+            }
+
+            GreedyTravelPlanner planner = new GreedyTravelPlanner();
+
+            if (end != null) {
+                // Use intelligent route planning for start-to-end route
+                GreedyTravelPlanner.Result result = planner.planIntelligentRoute(graph, start, end, cities);
+
+                System.out.println("=== DIJKSTRA TRAVEL PLANNER ===");
+                if (result.description != null && !result.description.isEmpty()) {
+                    System.out.println(result.description);
+                    System.out.println();
                 }
-            }
-        } else {
-            // Use traditional greedy planner for round-trip
-            GreedyTravelPlanner.Result result = planner.plan(graph, start, new HashSet<>(cities), returnToStart);
+                System.out.println("Recommended route:");
+                for (int i = 0; i < result.route.size(); i++) {
+                    City c = result.route.get(i);
+                    System.out.print(c.getName());
+                    if (i < result.route.size() - 1)
+                        System.out.print(" -> ");
+                }
+                System.out.println();
+                System.out.printf("Route distance: %.2f km\n", result.totalDistanceKm);
 
-            System.out.println("Greedy route (visiting all cities):");
-            for (int i = 0; i < result.route.size(); i++) {
-                City c = result.route.get(i);
-                System.out.print(c.getName());
-                if (i < result.route.size() - 1)
-                    System.out.print(" -> ");
+                if (!result.suggestedCities.isEmpty()) {
+                    System.out.println();
+                    System.out.println("Cities you can visit along the way:");
+                    for (City city : result.suggestedCities) {
+                        double detourCost = calculateDetourCost(start, end, city);
+                        System.out.printf("- %s (adds %.1f km to your journey)\n", city.getName(), detourCost);
+                    }
+                }
+
+            } else {
+                // Use traditional greedy planner for round-trip
+                GreedyTravelPlanner.Result result = planner.plan(graph, start, new HashSet<>(cities), returnToStart);
+
+                System.out.println("Greedy route (visiting all cities):");
+                for (int i = 0; i < result.route.size(); i++) {
+                    City c = result.route.get(i);
+                    System.out.print(c.getName());
+                    if (i < result.route.size() - 1)
+                        System.out.print(" -> ");
+                }
+                System.out.println();
+                System.out.printf("Total distance: %.2f km\n", result.totalDistanceKm);
             }
-            System.out.println();
-            System.out.printf("Direct distance: %.2f km\n", result.totalDistanceKm);
+
+        } catch (FileNotFoundException fnf) {
+            System.out.println("CSV file not found: " + csvPath);
+        } catch (IOException ioe) {
+            System.out.println("Error reading CSV file: " + ioe.getMessage());
+        } catch (IllegalStateException ise) {
+            System.out.println("Unable to compute a route: " + ise.getMessage());
+        } catch (NumberFormatException nfe) {
+            System.out.println("CSV parse error: invalid number format - " + nfe.getMessage());
+        } catch (IllegalArgumentException iae) {
+            System.out.println(iae.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -108,8 +142,7 @@ public class Main {
     }
 
     private static City findCity(List<City> cities, String name) {
-        return cities.stream().filter(c -> c.getName().equalsIgnoreCase(name)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("City not found: " + name));
+        return cities.stream().filter(c -> c.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     private static double calculateDetourCost(City start, City end, City city) {
@@ -124,4 +157,5 @@ public class Main {
                         end.getLatitude(), end.getLongitude());
         return viaCityDistance - directDistance;
     }
+
 }
