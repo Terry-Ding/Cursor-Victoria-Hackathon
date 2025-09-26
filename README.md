@@ -84,7 +84,7 @@ java Main data/cities.csv --start Victoria
 ```
 Greedy route:
 Victoria -> Seattle -> Portland -> San Francisco -> Los Angeles -> Las Vegas -> Phoenix -> Salt Lake City -> Denver -> Vancouver
-Total distance: 4523.45 km
+Direct distance: 4523.45 km
 ```
 
 ### Example 2: Round trip from Vancouver
@@ -95,7 +95,7 @@ java Main data/cities.csv --start Vancouver --return
 ```
 Greedy route:
 Vancouver -> Victoria -> Seattle -> Portland -> San Francisco -> Los Angeles -> Las Vegas -> Phoenix -> Salt Lake City -> Denver -> Vancouver
-Total distance: 5234.78 km
+Direct distance: 5234.78 km
 ```
 
 ## Data Format

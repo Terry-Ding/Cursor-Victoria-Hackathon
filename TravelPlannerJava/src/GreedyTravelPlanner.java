@@ -354,7 +354,6 @@ public class GreedyTravelPlanner {
      * Generates a human-readable description of the route.
      * This method is necessary for advanced route planning and may be used by other planners or future features.
      */
-    @SuppressWarnings("unused")
     private String generateRouteDescription(City start, City end, List<City> suggestedCities, 
                                           double directDistance, double totalDistance, double shortestDistance) {
         StringBuilder desc = new StringBuilder();
