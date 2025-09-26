@@ -6,7 +6,8 @@ javac -d . src/*.java
 
 if [ $? -eq 0 ]; then
     echo "✅ Compilation successful!"
-    echo "Run with: java Main data/cities.csv --start Victoria --return"
+    echo "Run with: java Main data/cities.csv --start [City-1] --end [City-2]"
+    echo "Or: java Main data/cities.csv --start Nanaimo --return (round trip)"
 else
     echo "❌ Compilation failed!"
     exit 1
