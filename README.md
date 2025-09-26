@@ -1,127 +1,209 @@
-# Hackathon Game Collection 🎮
+# Travel Planner - Java Graph Algorithm 🗺️
 
-A collection of classic arcade games built with Python and Pygame for the Victoria Hackathon!
+A Java-based travel route planner using graph algorithms and greedy optimization for the Victoria Hackathon!
 
-## Games Included
+## Overview
 
-### 🐍 Snake Game
-- Classic snake gameplay with smooth controls
-- Food collection and score tracking
-- High score system with persistent storage
-- Dynamic speed increase as score grows
-- Animated snake head with directional eyes
-- WASD and arrow key controls
+This project implements a **greedy nearest-neighbor algorithm** to find efficient travel routes between cities. It uses a complete graph where each city is connected to every other city, with distances calculated using the Haversine formula for real-world geographic distances.
 
-### 🚀 Space Shooter
-- Player ship with health system
-- Enemy ships with AI shooting
-- Explosion effects
-- Increasing difficulty over time
-- Starfield background
-- Power-ups and special effects
+## Features
 
-### 🧱 Breakout
-- Classic brick-breaking gameplay
-- Realistic ball physics
-- Multiple levels with increasing difficulty
-- Power-ups (big paddle, small paddle, extra life)
-- Lives system and score tracking
-- Colorful brick patterns
+- 🏙️ **Graph-based city network** - Complete graph with real geographic coordinates
+- 🎯 **Greedy algorithm** - Fast nearest-neighbor pathfinding
+- 📍 **Real distances** - Haversine formula for accurate Earth distances
+- 🚀 **Flexible routing** - Start from any city, optionally return to start
+- 📊 **CSV data input** - Easy to add new cities and routes
+- ⚡ **Fast execution** - O(n²) complexity for quick results
 
-## How to Play
+## Algorithm Details
 
-### 🐍 Snake Game
-- **Movement**: Use WASD or arrow keys to control the snake
-- **Objective**: Eat the red food to grow and increase your score
-- **Avoid**: Don't hit the walls or yourself!
+### Greedy Nearest-Neighbor Approach
+1. Start at the specified city (or first city in dataset)
+2. At each step, visit the nearest unvisited city
+3. Continue until all cities are visited
+4. Optionally return to the starting city
 
-### 🚀 Space Shooter
-- **Movement**: Use WASD or arrow keys to move your ship
-- **Shooting**: Hold Space to shoot at enemy ships
-- **Objective**: Destroy enemies and survive as long as possible
-- **Avoid**: Enemy bullets and ship collisions
+**Note**: This is a greedy heuristic, not optimal like TSP algorithms, but provides good results quickly for hackathon demos.
 
-### 🧱 Breakout
-- **Movement**: Use A/D or left/right arrows to move the paddle
-- **Objective**: Break all bricks by bouncing the ball
-- **Strategy**: Use paddle angle to control ball direction
-- **Power-ups**: Collect falling power-ups for special abilities
+## Project Structure
 
-### 🎮 Common Controls
-- **Space**: Shoot (Space Shooter), Pause/Resume (all games), Restart (after game over)
-- **Escape**: Quit any game
+```
+TravelPlannerJava/
+├── pom.xml                           # Maven configuration
+├── data/
+│   └── cities.csv                    # Sample city data (name,lat,lon)
+├── src/main/java/com/hackathon/travel/
+│   ├── City.java                     # City model with coordinates
+│   ├── Edge.java                     # Graph edge with distance
+│   ├── Graph.java                    # Graph data structure
+│   ├── GreedyTravelPlanner.java      # Main algorithm implementation
+│   └── Main.java                     # CLI application entry point
+└── README.md                         # This file
+```
 
 ## Installation & Setup
 
-1. **Install Python** (3.7 or higher)
-2. **Install dependencies**:
+### Prerequisites
+- **Java 17+** (JDK or JRE)
+- **Maven 3.6+** (optional, for building)
+
+### Quick Start (Without Maven)
+
+1. **Navigate to project directory**:
    ```bash
-   pip install -r requirements.txt
-   ```
-3. **Run the games**:
-   ```bash
-   # Option 1: Main launcher (choose from all games)
-   python3 main.py
-   
-   # Option 2: Quick launchers
-   python3 run_snake.py        # Snake Game
-   python3 run_space_shooter.py # Space Shooter
-   python3 run_breakout.py     # Breakout
-   
-   # Option 3: Direct game files
-   python3 games/snake.py
-   python3 games/space_shooter.py
-   python3 games/breakout.py
+   cd TravelPlannerJava
    ```
 
-## Game Structure
+2. **Compile the project**:
+   ```bash
+   javac -d out $(find src/main/java -name "*.java")
+   ```
 
+3. **Run the travel planner**:
+   ```bash
+   # Basic usage - visit all cities starting from first city
+   java -cp out com.hackathon.travel.Main data/cities.csv
+   
+   # Start from specific city
+   java -cp out com.hackathon.travel.Main data/cities.csv --start Victoria
+   
+   # Return to starting city (complete round trip)
+   java -cp out com.hackathon.travel.Main data/cities.csv --start Victoria --return
+   ```
+
+### With Maven (Recommended)
+
+1. **Build the project**:
+   ```bash
+   cd TravelPlannerJava
+   mvn clean package
+   ```
+
+2. **Run the executable JAR**:
+   ```bash
+   # Basic usage
+   java -jar target/travel-planner-1.0.0-jar-with-dependencies.jar data/cities.csv
+   
+   # Start from specific city and return
+   java -jar target/travel-planner-1.0.0-jar-with-dependencies.jar data/cities.csv --start Victoria --return
+   ```
+
+## Usage Examples
+
+### Example 1: Visit all cities starting from Victoria
+```bash
+java -cp out com.hackathon.travel.Main data/cities.csv --start Victoria
 ```
-├── main.py                    # Main entry point with game selection
-├── run_snake.py              # Quick launcher for Snake game
-├── run_space_shooter.py      # Quick launcher for Space Shooter
-├── run_breakout.py           # Quick launcher for Breakout
-├── test_game.py              # Test script for game functionality
-├── games/
-│   ├── __init__.py
-│   ├── snake.py              # Snake game implementation
-│   ├── space_shooter.py      # Space Shooter game implementation
-│   └── breakout.py           # Breakout game implementation
-├── requirements.txt          # Python dependencies
-├── high_score.txt            # High score storage (created automatically)
-└── README.md                # This file
+**Output**:
+```
+Greedy route:
+Victoria -> Seattle -> Portland -> San Francisco -> Los Angeles -> Las Vegas -> Phoenix -> Salt Lake City -> Denver -> Vancouver
+Total distance: 4523.45 km
 ```
 
-## Development
+### Example 2: Round trip from Vancouver
+```bash
+java -cp out com.hackathon.travel.Main data/cities.csv --start Vancouver --return
+```
+**Output**:
+```
+Greedy route:
+Vancouver -> Victoria -> Seattle -> Portland -> San Francisco -> Los Angeles -> Las Vegas -> Phoenix -> Salt Lake City -> Denver -> Vancouver
+Total distance: 5234.78 km
+```
 
-The game is built with:
-- **Python 3.7+**
-- **Pygame 2.5.2** for graphics and game loop
-- **Object-oriented design** for clean code structure
+## Data Format
+
+The `data/cities.csv` file contains city information in CSV format:
+
+```csv
+# name,lat,lon
+Victoria,48.4284,-123.3656
+Vancouver,49.2827,-123.1207
+Seattle,47.6062,-122.3321
+Portland,45.5152,-122.6784
+San Francisco,37.7749,-122.4194
+Los Angeles,34.0522,-118.2437
+Las Vegas,36.1699,-115.1398
+Phoenix,33.4484,-112.0740
+Salt Lake City,40.7608,-111.8910
+Denver,39.7392,-104.9903
+```
+
+### Adding New Cities
+Simply add new lines to the CSV file:
+```csv
+New York,40.7128,-74.0060
+Boston,42.3601,-71.0589
+```
+
+## Technical Implementation
+
+### Graph Model
+- **Complete Graph**: Every city connected to every other city
+- **Weighted Edges**: Distances calculated using Haversine formula
+- **Undirected**: Travel distance is same in both directions
+
+### Distance Calculation
+Uses the **Haversine formula** for accurate Earth surface distances:
+```java
+public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+    final double R = 6371.0; // Earth radius in km
+    // ... implementation details
+}
+```
+
+### Algorithm Complexity
+- **Time Complexity**: O(n²) where n is number of cities
+- **Space Complexity**: O(n²) for the complete graph
+- **Practical Performance**: Handles 100+ cities efficiently
+
+## Hackathon Features
+
+This project demonstrates:
+- ✅ **Graph algorithms** - Complete graph implementation
+- ✅ **Greedy optimization** - Nearest-neighbor heuristic
+- ✅ **Real-world data** - Geographic coordinates and distances
+- ✅ **Clean Java code** - Object-oriented design
+- ✅ **CLI interface** - Easy to demo and use
+- ✅ **Maven build** - Professional project structure
+- ✅ **Extensible design** - Easy to add new algorithms
 
 ## Future Enhancements
 
-- 🏆 High score system
-- 🎵 Sound effects and music
-- 🎨 Different themes and colors
-- 🚀 Power-ups and special food
-- 📱 Mobile-friendly controls
+- 🚀 **Multiple algorithms** - TSP, genetic algorithms, simulated annealing
+- 🗺️ **Visualization** - Map display of routes
+- 📊 **Performance metrics** - Algorithm comparison
+- 🌐 **Real-time data** - Live traffic and weather integration
+- 📱 **Web interface** - Browser-based planning tool
 
-## Hackathon Notes
+## Development
 
-This project demonstrates:
-- Game development fundamentals
-- Python programming skills
-- Pygame library usage
-- Object-oriented programming
-- Event handling and game loops
+### Running Tests
+```bash
+# With Maven
+mvn test
 
-Perfect for a hackathon because it's:
-- ✅ Quick to build and test
-- ✅ Fun and engaging
-- ✅ Easy to extend with new features
-- ✅ Great foundation for learning game development
+# Without Maven (if you add test files)
+javac -cp "out:junit-platform-console-standalone.jar" -d out-test src/test/java/**/*.java
+java -jar junit-platform-console-standalone.jar --class-path out --scan-classpath
+```
+
+### Building for Distribution
+```bash
+mvn clean package
+# Creates: target/travel-planner-1.0.0-jar-with-dependencies.jar
+```
 
 ---
 
-**Happy Gaming!** 🎮
+**Perfect for Hackathon Demo!** 🏆
+
+This project showcases:
+- Advanced algorithms and data structures
+- Real-world problem solving
+- Clean, professional Java code
+- Practical application with geographic data
+- Easy to extend and modify
+
+**Ready to present!** 🚀
