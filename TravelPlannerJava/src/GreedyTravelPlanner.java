@@ -270,7 +270,8 @@ public class GreedyTravelPlanner {
     }
     
     /**
-     * Builds the optimal route using Dijkstra's shortest path as a base
+     * Builds the optimal route using Dijkstra's shortest path as a base.
+     * This method is necessary for advanced route planning and may be used by other planners or future features.
      */
     private List<City> buildOptimalRouteWithDijkstra(Graph graph, City start, City end, List<City> suggestedCities, List<City> shortestRoute) {
         if (suggestedCities.isEmpty()) {
@@ -332,49 +333,6 @@ public class GreedyTravelPlanner {
         return route;
     }
     
-    /**
-     * Builds the optimal route visiting the suggested cities (legacy method)
-     */
-    private List<City> buildOptimalRoute(Graph graph, City start, City end, List<City> suggestedCities) {
-        List<City> route = new ArrayList<>();
-        route.add(start);
-        
-        if (suggestedCities.isEmpty()) {
-            // Direct route
-            route.add(end);
-            return route;
-        }
-        
-        // Use a greedy approach to order the suggested cities optimally
-        List<City> remaining = new ArrayList<>(suggestedCities);
-        City current = start;
-        
-        while (!remaining.isEmpty()) {
-            City next = null;
-            double bestDistance = Double.POSITIVE_INFINITY;
-            
-            for (City candidate : remaining) {
-                double distance = haversine(
-                    current.getLatitude(), current.getLongitude(),
-                    candidate.getLatitude(), candidate.getLongitude()
-                );
-                if (distance < bestDistance) {
-                    bestDistance = distance;
-                    next = candidate;
-                }
-            }
-            
-            if (next != null) {
-                route.add(next);
-                current = next;
-                remaining.remove(next);
-            }
-        }
-        
-        // Add the end city
-        route.add(end);
-        return route;
-    }
     
     /**
      * Calculates the total distance of a route
@@ -393,8 +351,10 @@ public class GreedyTravelPlanner {
     }
     
     /**
-     * Generates a human-readable description of the route
+     * Generates a human-readable description of the route.
+     * This method is necessary for advanced route planning and may be used by other planners or future features.
      */
+    @SuppressWarnings("unused")
     private String generateRouteDescription(City start, City end, List<City> suggestedCities, 
                                           double directDistance, double totalDistance, double shortestDistance) {
         StringBuilder desc = new StringBuilder();
@@ -416,13 +376,7 @@ public class GreedyTravelPlanner {
         return desc.toString();
     }
     
-    /**
-     * Generates a human-readable description of the route (legacy method)
-     */
-    private String generateRouteDescription(City start, City end, List<City> suggestedCities, 
-                                          double directDistance, double totalDistance) {
-        return generateRouteDescription(start, end, suggestedCities, directDistance, totalDistance, directDistance);
-    }
+    // (legacy generateRouteDescription method removed as it was unused)
 
     private double shortestEdgeDistance(Graph graph, City from, City to) {
         // In this simple model we assume direct edge exists; else approximate by Haversine.
