@@ -29,25 +29,24 @@ This project implements a **greedy nearest-neighbor algorithm** to find efficien
 
 ```
 TravelPlannerJava/
-├── pom.xml                           # Maven configuration
-├── data/
-│   └── cities.csv                    # Sample city data (name,lat,lon)
-├── src/main/java/com/hackathon/travel/
+├── src/
 │   ├── City.java                     # City model with coordinates
 │   ├── Edge.java                     # Graph edge with distance
 │   ├── Graph.java                    # Graph data structure
 │   ├── GreedyTravelPlanner.java      # Main algorithm implementation
 │   └── Main.java                     # CLI application entry point
+├── data/
+│   └── cities.csv                    # Sample city data (name,lat,lon)
+├── compile.sh                        # Simple compilation script
 └── README.md                         # This file
 ```
 
 ## Installation & Setup
 
 ### Prerequisites
-- **Java 17+** (JDK or JRE)
-- **Maven 3.6+** (optional, for building)
+- **Java 8+** (JDK or JRE)
 
-### Quick Start (Without Maven)
+### Quick Start
 
 1. **Navigate to project directory**:
    ```bash
@@ -56,43 +55,30 @@ TravelPlannerJava/
 
 2. **Compile the project**:
    ```bash
-   javac -d out $(find src/main/java -name "*.java")
+   # Option 1: Use the compilation script
+   ./compile.sh
+   
+   # Option 2: Manual compilation
+   javac -d . src/*.java
    ```
 
 3. **Run the travel planner**:
    ```bash
    # Basic usage - visit all cities starting from first city
-   java -cp out com.hackathon.travel.Main data/cities.csv
+   java Main data/cities.csv
    
    # Start from specific city
-   java -cp out com.hackathon.travel.Main data/cities.csv --start Victoria
+   java Main data/cities.csv --start Victoria
    
    # Return to starting city (complete round trip)
-   java -cp out com.hackathon.travel.Main data/cities.csv --start Victoria --return
-   ```
-
-### With Maven (Recommended)
-
-1. **Build the project**:
-   ```bash
-   cd TravelPlannerJava
-   mvn clean package
-   ```
-
-2. **Run the executable JAR**:
-   ```bash
-   # Basic usage
-   java -jar target/travel-planner-1.0.0-jar-with-dependencies.jar data/cities.csv
-   
-   # Start from specific city and return
-   java -jar target/travel-planner-1.0.0-jar-with-dependencies.jar data/cities.csv --start Victoria --return
+   java Main data/cities.csv --start Victoria --return
    ```
 
 ## Usage Examples
 
 ### Example 1: Visit all cities starting from Victoria
 ```bash
-java -cp out com.hackathon.travel.Main data/cities.csv --start Victoria
+java Main data/cities.csv --start Victoria
 ```
 **Output**:
 ```
@@ -103,7 +89,7 @@ Total distance: 4523.45 km
 
 ### Example 2: Round trip from Vancouver
 ```bash
-java -cp out com.hackathon.travel.Main data/cities.csv --start Vancouver --return
+java Main data/cities.csv --start Vancouver --return
 ```
 **Output**:
 ```
@@ -179,21 +165,22 @@ This project demonstrates:
 
 ## Development
 
-### Running Tests
+### Compiling and Running
 ```bash
-# With Maven
-mvn test
+# Compile all source files
+javac -d . src/*.java
 
-# Without Maven (if you add test files)
-javac -cp "out:junit-platform-console-standalone.jar" -d out-test src/test/java/**/*.java
-java -jar junit-platform-console-standalone.jar --class-path out --scan-classpath
+# Run the application
+java Main data/cities.csv --start Victoria --return
+
+# Clean compiled files
+rm *.class
 ```
 
-### Building for Distribution
-```bash
-mvn clean package
-# Creates: target/travel-planner-1.0.0-jar-with-dependencies.jar
-```
+### Adding New Features
+- Add new algorithms by extending the `GreedyTravelPlanner` class
+- Modify the `Graph` class to support different graph types
+- Add visualization by creating a new class that outputs route data
 
 ---
 
